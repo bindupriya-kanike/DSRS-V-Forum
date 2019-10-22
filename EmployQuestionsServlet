@@ -1,0 +1,72 @@
+package com.virtusa.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.virtusa.dao.QuestionsDAO;
+import com.virtusa.entities.Questions;
+
+/**
+ * Servlet implementation class EmployViewQuestions
+ */
+@WebServlet("/EmployViewQuestions")
+public class EmployViewQuestions extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		 PrintWriter out=response.getWriter();
+		 String name=request.getParameter("Query_name");
+	        if( name!= null){
+	        QuestionsDAO questions=new QuestionsDAO(); 
+	        List<Questions> qes=questions.viewQuestion(name);
+	        if(qes!=null) {
+	        out.println(" <table border=\"3\">\r\n" +
+	                "    <tr>\r\n" +
+	                "        <th>Query_id</th>\r\n" +
+	                "        <th>Query_name</th>\r\n" +
+	                "        <th>Query_desription</th>\r\n" +
+	                "        <th>Query_status</th>\r\n" +
+	                "        <th>Posted_date</th>\r\n" +
+	                "    </tr>\r\n" +
+	                "    <tr>");
+	        for(Questions q:qes){
+	            out.println("<td>"+q.getQuestion_id() +"</td>\r\n" +
+	                    "        <td>"+q.getQuestion_name() +"\r\n" +
+	                    "        <td>"+q.getQuestion_description()+"</td>\r\n" +
+	                    "        <td>"+q.getQuestion_status() +"</td>\r\n" +
+	                    "        <td>"+q.getQuestion_posted_date()+"</td>\r\n" +
+	                    "    </tr>");
+	        }
+	        }
+	        }else {
+	            out.println("Query status inactive");
+	        }
+	        RequestDispatcher disp=request.getRequestDispatcher("EmployViewQuestions.jsp");
+	        disp.include(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
