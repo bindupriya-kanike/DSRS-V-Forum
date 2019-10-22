@@ -1,0 +1,89 @@
+package com.virtusa.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.virtusa.dao.AnswersDAO;
+import com.virtusa.dao.UsersDAO;
+import com.virtusa.entities.Answers;
+import com.virtusa.entities.Questions;
+
+/**
+ * Servlet implementation class PostAnswer
+ */
+@WebServlet("/PostAnswer")
+public class PostAnswer extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+   
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter out=response.getWriter();
+        int ans_id=new AnswersDAO().generateAnswerId();
+       
+        List<Questions> questions=new UsersDAO().viewQuestions();
+        if(questions!=null) {
+        out.println("<table border=\"3\">\r\n" +
+                "    <tr>\r\n" +
+                "        <th>Query_id</th>\r\n" +
+                "        <th>Query_name</th>\r\n" +
+                "        <th>Query_desription</th>\r\n" +
+                "        <th>Query_status</th>\r\n" +
+                "        <th>Query_date</th>\r\n" +
+                "\r\n" +
+                "    </tr>");
+        for (Questions qes : questions) {
+                out.println("<tr>\r\n" +
+                        "        <td>" +qes.getQuestion_id()+ "</td>\r\n" +
+                        "          <td>" +qes.getQuestion_name()+ "</td>\r\n" +
+                        "        <td>" +qes.getQuestion_description()+ "\r\n" +
+                        "        <td>" +qes.getQuestion_status()+ "</td>\r\n" +
+                        "        <td>" +qes.getQuestion_posted_date()+ " </td>\r\n" +
+                        "    </tr>");
+           
+        }
+        out.println("</table>");
+        }else {
+            out.println("no questions found");
+        }
+        
+        
+        AnswersDAO dao=new AnswersDAO();
+        Answers ans=new Answers();
+        int query_id=Integer.parseInt(request.getParameter("query_id"));
+         if(query_id!=0){  
+             ans.setAnswer_id(ans_id);        
+             ans.setQuestion_id(query_id);
+             ans.setAnswer_name(request.getParameter("answer_name"));
+             ans.setAnswer_description(request.getParameter("answer_description"));
+            out.println(dao.postAnswersDao(query_id, ans));        
+         }else {
+             out.println("enter query_id");
+         }
+             RequestDispatcher disp1=request.getRequestDispatcher("PostAnswer.jsp");
+            disp1.include(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
