@@ -1,0 +1,98 @@
+package com.virtusa.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.virtusa.dao.AnswersDAO;
+import com.virtusa.dao.QuestionsDAO;
+import com.virtusa.entities.Answers;
+import com.virtusa.entities.Questions;
+
+/**
+ * Servlet implementation class EmployViewAnswers
+ */
+@WebServlet("/EmployViewAnswers")
+public class EmployViewAnswers extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+   
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter out=response.getWriter();
+		String name=request.getParameter("Questionname");
+        if(name!=null){
+             QuestionsDAO dao=new QuestionsDAO();
+                Questions q=dao.searchQuestionDao(name);
+                Questions temp=q;
+                if(temp!=null){
+                    if(temp.getQuestion_status().equalsIgnoreCase("active")){
+                    out.println("Question id         : "+q.getQuestion_id()+"<br/>");
+                    out.println("Question name       : "+q.getQuestion_name()+"<br/>");
+                    out.println("Question description: "+q.getQuestion_description()+"<br/>");
+                    out.println("posted date         : "+q.getQuestion_posted_date()+"<br/>");
+                    }else{
+                        out.println("question status inactive couldnt post answer");
+                    }
+                }else{
+                    out.println("question not found");
+                }
+            }
+        out.println(" <form style=\"background-color:#B0E0E6 \" method=\"get\" action=\"EmployViewAnswers\">\r\n" +
+                "    <center>\r\n" +
+                "        Query id:\r\n" +
+                "        <input type=\"text\" name=\"query_id\" required /><br/><br/>\r\n" +
+                "        <input type=\"submit\" value=\"view_answer\" /><br/><br/>\r\n" +
+                "    </form>"
+                + "<input type=\"button\" name=\"logout\" value=\"Logout\" onclick=\"window.location='Login.jsp'\">\r\n" +
+                "</div><br/><br><br>\r\n" +
+                "<div class=\"Back\">\r\n" +
+                "<input type=\"button\" name=\"Back\" value=\"Back\" onclick=\"window.location='Queries.jsp'\">\r\n" +
+                "</div></center>\r\n");
+        int id=Integer.parseInt(request.getParameter("query_id"));
+        if(id != 0){
+                List<Answers> ans=new AnswersDAO().viewAnswers(id);
+                if(ans!=null) {
+                out.println("<table border=\"3\">\r\n" +
+                        "    <tr> \r\n" +
+                        "        <th>Answer_id</th>\r\n" + 
+                        "        <th>Query_id</th>\r\n" +
+                        "        <th>Answer_name</th>\r\n" +
+                        "        <th>Answer_desription</th>\r\n" +
+                        "        <th>Answer_status</th>\r\n" +
+                        "        <th>Posted_date</th>\r\n" +
+                        "    </tr>  <tr>");
+                for (Answers a : ans) {
+                    out.println(" <td>"+a.getAnswer_id()+"</td>\r\n" +
+                            "         <td>"+a.getQuestion_id()+"</td>\r\n" +
+                            "        <td>"+a.getAnswer_name()+"</td>\r\n" +
+                            "        <td>"+a.getAnswer_description() +"</td>\r\n" +
+                            "        <td>"+a.getStatus()+" </td>\r\n" +
+                            "        <td>"+a.getAns_posted_date()+"</td>\r\n" +
+                            "    </tr>");
+                }
+          }else {
+              out.println("Answers status inactive");
+          }
+          }
+	}
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
