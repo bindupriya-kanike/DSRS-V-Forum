@@ -1,0 +1,58 @@
+package com.virtusa.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.virtusa.dao.QuestionsDAO;
+import com.virtusa.entities.Questions;
+
+/**
+ * Servlet implementation class PostQuestion
+ */
+@WebServlet("/PostQuestion")
+public class PostQuestion extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+   
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		 PrintWriter out=response.getWriter();
+	        int question_id=new QuestionsDAO().generateQuestionId();
+	        QuestionsDAO dao=new QuestionsDAO();
+	        String name=request.getParameter("query_name");
+	            Questions questions=new Questions();
+	            if(name!=null){
+	              questions.setQuestion_id(question_id);
+	              questions.setQuestion_name(name);
+	              questions.setQuestion_description(request.getParameter("query_description"));
+	               out.println(dao.addQuestionsDAO(questions));    
+	            }
+	            else{
+	                out.println("enter query_name in the textfield");
+	            }
+	            RequestDispatcher disp=request.getRequestDispatcher("PostQuestion.jsp");
+	            disp.include(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
